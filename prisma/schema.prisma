@@ -1,0 +1,39 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "fullTextIndex"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum MediaType {
+  IMAGE
+  AUDIO
+  VIDEO
+}
+
+enum MediaStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model Media {
+  id          String      @id @default(uuid())
+  title       String?
+  type        MediaType?
+  description String?
+  url         String?     @unique
+  status      MediaStatus @default(ACTIVE)
+  deleted     Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  deletedAt   DateTime?   @map("deleted_at")
+
+  @@fulltext([title])
+  @@fulltext([title, url])
+}
